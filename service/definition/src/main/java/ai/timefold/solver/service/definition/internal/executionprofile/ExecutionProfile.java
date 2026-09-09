@@ -1,14 +1,10 @@
 package ai.timefold.solver.service.definition.internal.executionprofile;
 
+import java.util.List;
 import java.util.Map;
 
 /**
  * A named, predefined runtime configuration a run can be started with.
- * <p>
- * Execution profiles describe how a run executes (diagnostics, logging, profiling, ...). This is an internal contract:
- * model developers are not expected to implement or reference it. Implementations are provided by the solver service and
- * the platform, and are discovered via {@link java.util.ServiceLoader}, so adding a new profile does not require editing
- * any central registry. A run may activate several profiles at once.
  */
 public interface ExecutionProfile {
 
@@ -23,11 +19,29 @@ public interface ExecutionProfile {
     String description();
 
     /**
-     * Additional configuration contributed by this profile, applied to the run's environment - each entry is injected as
-     * an environment variable into the solver pod. Keys must be valid environment-variable names. When multiple profiles
-     * are activated and define the same key, the resulting value is unspecified. Defaults to no extra configuration.
+     * The inputs this profile accepts. Acts as a whitelist: the platform validates submitted values against these and
+     * rejects anything not declared. Defaults to no parameters (a fixed profile that takes no input).
      */
-    default Map<String, String> properties() {
+    default List<ExecutionProfileParameter> parameters() {
+        return List.of();
+    }
+
+    /**
+     * Turns the caller-supplied inputs (already validated against {@link #parameters()}) into the concrete parameter values
+     * to use for this run - applying defaults and generating values for absent parameters where applicable. Called once at
+     * submit time; the result is persisted with the run so it stays reproducible. Defaults to returning the inputs
+     * unchanged.
+     */
+    default Map<String, String> resolveParameters(Map<String, String> inputs) {
+        return inputs;
+    }
+
+    /**
+     * Maps the resolved parameter values (from {@link #resolveParameters(Map)}) to environment variables injected into the
+     * solver pod. Keys must be valid environment-variable names. When multiple profiles are activated and define the same
+     * key, the resulting value is unspecified. Defaults to no environment variables.
+     */
+    default Map<String, String> toEnvironment(Map<String, String> resolvedParameters) {
         return Map.of();
     }
 }
