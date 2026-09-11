@@ -9,9 +9,7 @@ import java.util.Map;
 public interface ExecutionProfile {
 
     /**
-     * Stable, unique identifier of the profile. Used everywhere the profile is referenced programmatically - APIs,
-     * permissions, tags, feature-flag keys - so it must never change once published, and must be unique across all
-     * implementations.
+     * Stable, unique identifier of the profile.
      */
     String id();
 
