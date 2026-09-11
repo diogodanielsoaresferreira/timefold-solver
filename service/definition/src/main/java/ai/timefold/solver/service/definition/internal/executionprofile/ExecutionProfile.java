@@ -9,7 +9,15 @@ import java.util.Map;
 public interface ExecutionProfile {
 
     /**
-     * Stable identifier of the profile, used in APIs and permissions. Must be unique across all implementations.
+     * Stable, unique identifier of the profile. Used everywhere the profile is referenced programmatically - APIs,
+     * permissions, tags, feature-flag keys - so it must never change once published, and must be unique across all
+     * implementations.
+     */
+    String id();
+
+    /**
+     * Human readable name of the profile, for display in user interfaces. Unlike {@link #id()} this is not a stable key:
+     * it may be changed or localized without breaking existing references.
      */
     String name();
 

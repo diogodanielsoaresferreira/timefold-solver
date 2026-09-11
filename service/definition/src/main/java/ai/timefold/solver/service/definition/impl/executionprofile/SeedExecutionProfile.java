@@ -28,8 +28,13 @@ public final class SeedExecutionProfile implements ExecutionProfile {
     static final String ENV_QUARKUS_RANDOM_SEED = "QUARKUS_TIMEFOLD_SOLVER_DEFAULT_RANDOM_SEED";
 
     @Override
-    public String name() {
+    public String id() {
         return "seed";
+    }
+
+    @Override
+    public String name() {
+        return "Fixed random seed";
     }
 
     @Override
